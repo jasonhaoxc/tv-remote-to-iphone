@@ -36,6 +36,7 @@ class RemoteKeyAccessibilityService : AccessibilityService() {
         esp32 = Esp32Client(config)
         RuntimeState.accessibilityRunning = true
         RuntimeState.log("无障碍遥控服务已启动（仅在投屏播放画面自动接管）")
+        refreshMirroringStateFromActiveWindow()
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
