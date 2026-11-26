@@ -102,6 +102,9 @@ flowchart LR
 # 通过局域网 ADB 推送到当贝 H3（在盒子 设置→关于 连续点击软件版本开启开发者选项与 USB/ADB 调试）
 adb connect <盒子IP>:5555
 adb install -r app/build/outputs/apk/debug/app-debug.apk
+
+# （可选，强烈推荐）一次性授予永久截屏权限，打开 App 自动静默启动监控、免每次弹窗确认
+adb shell appops set com.jason.dbboxcontroller PROJECT_MEDIA allow
 ```
 
 ### 3. 三步启动 & 网页框选校准

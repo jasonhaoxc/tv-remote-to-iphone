@@ -132,6 +132,12 @@ class MainActivity : AppCompatActivity() {
             }
             refreshUi()
         }
+
+        // Auto-start screen monitor on launch (silent & zero-popup once PROJECT_MEDIA is allowed via appops)
+        if (!RuntimeState.screenMonitorRunning) {
+            val mgr = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            screenCaptureLauncher.launch(mgr.createScreenCaptureIntent())
+        }
         refreshUi()
     }
 
