@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Subtle glowing ring -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M54,20a34,34 0 1,0 0,68a34,34 0 1,0 0,-68z"
+        android:strokeWidth="2.2"
+        android:strokeColor="#38BDF8"
+        android:strokeAlpha="0.45" />
+
+    <!-- Sleek TV / Phone screen rounded frame -->
+    <path
+        android:fillColor="#0F172A"
+        android:fillAlpha="0.65"
+        android:pathData="M34,26h40c3.3,0 6,2.7 6,6v44c0,3.3 -2.7,6 -6,6H34c-3.3,0 -6,-2.7 -6,-6V32c0,-3.3 2.7,-6 6,-6z"
+        android:strokeWidth="3"
+        android:strokeColor="#7DD3FC" />
+
+    <!-- Play / Skip-Ad fast-forward double chevron (auto-skip symbol) -->
+    <path
+        android:fillColor="#22C55E"
+        android:pathData="M40,42 L53,54 L40,66 Z" />
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M53,42 L66,54 L53,66 Z" />
+    <path
+        android:fillColor="#F8FAFC"
+        android:pathData="M67,43 h4 v22 h-4 z" />
+
+    <!-- Upward swipe indicator arrow at top -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M48,35 L54,30 L60,35"
+        android:strokeWidth="2.8"
+        android:strokeColor="#F8FAFC"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Bottom pill indicator -->
+    <path
+        android:fillColor="#7DD3FC"
+        android:fillAlpha="0.8"
+        android:pathData="M47,74 h14 a2,2 0 0,1 0,4 h-14 a2,2 0 0,1 0,-4 z" />
+</vector>

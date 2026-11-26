@@ -17,9 +17,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="iPhone 投屏遥控 &amp; 红果短剧去广告助手"
+            android:text="投屏遥控 · 自动跳广告"
             android:textColor="#F8FAFC"
-            android:textSize="26sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
         <TextView
