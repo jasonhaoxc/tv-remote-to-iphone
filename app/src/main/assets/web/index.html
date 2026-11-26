@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>当贝 H3 · iPhone 投屏遥控 & 红果短剧去广告校准</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#f1f5f9; --muted:#94a3b8; --blue:#38bdf8; --green:#22c55e; --orange:#f59e0b; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); padding:16px; }
+  h1 { margin:0 0 12px; font-size:20px; display:flex; align-items:center; gap:10px; }
+  .grid { display:grid; grid-template-columns: 1.5fr 1fr; gap:16px; max-width:1360px; margin:0 auto; }
+  @media (max-width: 960px) { .grid { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; }
+  .card h2 { margin:0 0 10px; font-size:15px; color:var(--blue); }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px; }
+  button { background:#2563eb; color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; }
+  button:hover { opacity:.9; }
+  button.sec { background:#334155; }
+  button.green { background:#16a34a; }
+  button.orange { background:#d97706; }
+  input[type=text], input[type=number] { background:#0f172a; color:var(--text); border:1px solid var(--border); border-radius:6px; padding:6px 8px; font-size:13px; }
+  label { font-size:13px; color:var(--muted); display:inline-flex; align-items:center; gap:6px; }
+  .badge { display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; background:#334155; }
+  .badge.ok { background:#14532d; color:#86efac; }
+  .badge.warn { background:#78350f; color:#fde68a; }
+  .canvas-wrap { position:relative; width:100%; background:#020617; border-radius:8px; overflow:hidden; border:1px solid var(--border); user-select:none; }
+  canvas { display:block; width:100%; height:auto; cursor:crosshair; }
+  .logs { background:#020617; border-radius:8px; padding:10px; font-family:ui-monospace,monospace; font-size:12px; height:210px; overflow:auto; line-height:1.5; color:#cbd5e1; }
+  .ocr-box { background:#0f172a; padding:8px; border-radius:8px; font-size:13px; margin-top:6px; border-left:3px solid var(--blue); }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div>
+    <div class="card">
+      <h1>📺 当贝 H3 · 红果短剧投屏广告框选校准</h1>
+      <div class="row">
+        <span id="bAcc" class="badge">无障碍: --</span>
+        <span id="bMon" class="badge">截屏监控: --</span>
+        <span id="bEsp" class="badge">ESP32: --</span>
+        <span id="bState" class="badge">状态: IDLE</span>
+        <span id="bSkipped" class="badge ok">已自动跳过: 0</span>
+      </div>
+      <div class="row">
+        <button id="btnModeP" class="green" onclick="setDrawMode('portrait')">框选【竖屏广告区】(绿框)</button>
+        <button id="btnModeL" class="sec" onclick="setDrawMode('landscape')">框选【横屏广告区】(橙框)</button>
+        <button class="sec" onclick="refreshFrame()">刷新画面</button>
+        <label><input type="checkbox" id="autoRefresh" checked /> 自动刷新(1.5s)</label>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="cv" width="1280" height="720"></canvas>
+      </div>
+      <div class="ocr-box">
+        <div>🟢 <b>竖屏广告区 OCR</b>：<span id="ocrP">--</span></div>
+        <div style="margin-top:4px;">🟠 <b>横屏广告区 OCR</b>：<span id="ocrL">--</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>遥控测试 & 日志</h2>
+      <div class="row">
+        <button onclick="sendAction('SWIPE_DOWN')">⬆️ 上一个视频</button>
+        <button onclick="sendAction('SWIPE_UP')">⬇️ 下一个视频</button>
+        <button class="sec" onclick="sendAction('TAP')">⏯️ 暂停/播放</button>
+        <button class="sec" onclick="sendAction('DOUBLE_TAP')">❤️ 点赞</button>
+      </div>
+      <div class="row">
+        <span style="font-size:12px;color:var(--muted);">光标微调（若灰点贴黑边）：</span>
+        <button class="sec" onclick="sendAction('MOVE:-30:0')">← 左移</button>
+        <button class="sec" onclick="sendAction('MOVE:30:0')">→ 右移</button>
+        <button class="sec" onclick="sendAction('MOVE:0:-25')">↑ 上移</button>
+        <button class="sec" onclick="sendAction('MOVE:0:25')">↓ 下移</button>
+      </div>
+      <div id="logs" class="logs">等待数据...</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2>ESP32-S3 连接配置</h2>
+      <div class="row">
+        <label>ESP32 IP: <input type="text" id="esp32Ip" size="15" placeholder="自动发现" /></label>
+        <button onclick="discoverEsp()">自动发现</button>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="remoteInterceptEnabled" /> 开启遥控器全局接管</label>
+        <label><input type="checkbox" id="autoSkipAdEnabled" /> 开启自动跳过广告</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>红果短剧广告识别参数</h2>
+      <div class="row">
+        <label><input type="checkbox" id="pEnabled" /> 启用竖屏广告区</label>
+        <label><input type="checkbox" id="lEnabled" /> 启用横屏广告区</label>
+      </div>
+      <div class="row">
+        <label>截屏间隔(ms): <input type="number" id="pollIntervalMs" style="width:80px" /></label>
+        <label>跳过冷却(ms): <input type="number" id="cooldownMs" style="width:80px" /></label>
+        <label>无读秒确认帧数: <input type="number" id="confirmFrames" style="width:60px" /></label>
+      </div>
+      <div style="margin-bottom:8px;">
+        <label style="display:block;margin-bottom:4px;">广告触发关键词（逗号分隔）：</label>
+        <input type="text" id="adKeywords" style="width:100%" />
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="display:block;margin-bottom:4px;">读秒结束/可跳过关键词（逗号分隔）：</label>
+        <input type="text" id="finishKeywords" style="width:100%" />
+      </div>
+      <button class="green" onclick="saveConfig()" style="width:100%">💾 保存所有配置（含框选坐标）</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let img = new Image();
+let drawMode = 'portrait';
+let dragging = false, sx = 0, sy = 0, cx = 0, cy = 0;
+let rois = {
+  portrait: { enabled: true, left: 0.34, top: 0.04, right: 0.66, bottom: 0.16 },
+  landscape: { enabled: true, left: 0.72, top: 0.04, right: 0.98, bottom: 0.16 }
+};
+let cfgLoaded = false;
+
+function setDrawMode(m) {
+  drawMode = m;
+  document.getElementById('btnModeP').className = m === 'portrait' ? 'green' : 'sec';
+  document.getElementById('btnModeL').className = m === 'landscape' ? 'orange' : 'sec';
+}
+
+function render() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  if (img.complete && img.naturalWidth > 0) {
+    ctx.drawImage(img, 0, 0, cv.width, cv.height);
+  } else {
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '24px sans-serif';
+    ctx.fillText('请先在当贝盒子上点击「开启投屏截屏监控」', 360, 360);
+  }
+  drawBox(rois.portrait, '#22c55e', '竖屏广告区');
+  drawBox(rois.landscape, '#f59e0b', '横屏广告区');
+  if (dragging) {
+    const x = Math.min(sx, cx), y = Math.min(sy, cy);
+    const w = Math.abs(cx - sx), h = Math.abs(cy - sy);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x, y, w, h);
+  }
+}
+
+function drawBox(r, color, label) {
+  if (!r) return;
+  const x = r.left * cv.width, y = r.top * cv.height;
+  const w = (r.right - r.left) * cv.width, h = (r.bottom - r.top) * cv.height;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.setLineDash(r.enabled ? [] : [8, 6]);
+  ctx.strokeRect(x, y, w, h);
+  ctx.fillStyle = color;
+  ctx.font = 'bold 18px sans-serif';
+  ctx.fillText(label + (r.enabled ? '' : '(已停用)'), x + 6, Math.max(22, y - 6));
+  ctx.restore();
+}
+
+function getPos(e) {
+  const rect = cv.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) * (cv.width / rect.width),
+    y: (e.clientY - rect.top) * (cv.height / rect.height)
+  };
+}
+
+cv.addEventListener('mousedown', e => {
+  const p = getPos(e); sx = cx = p.x; sy = cy = p.y; dragging = true;
+});
+window.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const p = getPos(e); cx = Math.max(0, Math.min(cv.width, p.x)); cy = Math.max(0, Math.min(cv.height, p.y));
+  render();
+});
+window.addEventListener('mouseup', () => {
+  if (!dragging) return;
+  dragging = false;
+  const x1 = Math.min(sx, cx) / cv.width, y1 = Math.min(sy, cy) / cv.height;
+  const x2 = Math.max(sx, cx) / cv.width, y2 = Math.max(sy, cy) / cv.height;
+  if (x2 - x1 > 0.02 && y2 - y1 > 0.02) {
+    rois[drawMode] = { enabled: rois[drawMode].enabled, left: +x1.toFixed(4), top: +y1.toFixed(4), right: +x2.toFixed(4), bottom: +y2.toFixed(4) };
+    render();
+    saveConfig();
+  }
+});
+
+function refreshFrame() {
+  const nextImg = new Image();
+  nextImg.onload = () => { img = nextImg; render(); };
+  nextImg.src = '/api/screenshot.jpg?t=' + Date.now();
+}
+
+async function pollStatus() {
+  try {
+    const r = await fetch('/api/status');
+    const d = await r.json();
+    const bAcc = document.getElementById('bAcc');
+    bAcc.textContent = '无障碍: ' + (d.accessibilityRunning ? '已开启' : '未开启');
+    bAcc.className = 'badge ' + (d.accessibilityRunning ? 'ok' : 'warn');
+    const bMon = document.getElementById('bMon');
+    bMon.textContent = '截屏监控: ' + (d.screenMonitorRunning ? '运行中' : '未启动');
+    bMon.className = 'badge ' + (d.screenMonitorRunning ? 'ok' : 'warn');
+    const bEsp = document.getElementById('bEsp');
+    bEsp.textContent = 'ESP32: ' + (d.esp32Reachable ? (d.esp32BleConnected ? '在线·蓝牙已连' : '在线·蓝牙未连') : '未连接');
+    bEsp.className = 'badge ' + (d.esp32Reachable && d.esp32BleConnected ? 'ok' : 'warn');
+    document.getElementById('bState').textContent = '状态: ' + d.detectorState;
+    document.getElementById('bSkipped').textContent = '已自动跳过: ' + d.totalSkippedAds;
+    document.getElementById('ocrP').textContent = d.lastPortraitOcr || '(空)';
+    document.getElementById('ocrL').textContent = d.lastLandscapeOcr || '(空)';
+    document.getElementById('logs').innerHTML = (d.logs || []).map(l => l.replace(/</g,'&lt;')).join('<br>');
+
+    if (!cfgLoaded && d.config) {
+      cfgLoaded = true;
+      document.getElementById('esp32Ip').value = d.config.esp32Ip || '';
+      document.getElementById('remoteInterceptEnabled').checked = !!d.config.remoteInterceptEnabled;
+      document.getElementById('autoSkipAdEnabled').checked = !!d.config.autoSkipAdEnabled;
+      document.getElementById('pollIntervalMs').value = d.config.pollIntervalMs;
+      document.getElementById('cooldownMs').value = d.config.cooldownMs;
+      document.getElementById('confirmFrames').value = d.config.confirmFrames;
+      document.getElementById('adKeywords').value = d.config.adKeywords || '';
+      document.getElementById('finishKeywords').value = d.config.finishKeywords || '';
+      rois.portrait = d.config.portraitRoi;
+      rois.landscape = d.config.landscapeRoi;
+      document.getElementById('pEnabled').checked = !!rois.portrait.enabled;
+      document.getElementById('lEnabled').checked = !!rois.landscape.enabled;
+      render();
+    }
+  } catch (e) {}
+}
+
+async function saveConfig() {
+  rois.portrait.enabled = document.getElementById('pEnabled').checked;
+  rois.landscape.enabled = document.getElementById('lEnabled').checked;
+  const payload = {
+    esp32Ip: document.getElementById('esp32Ip').value.trim(),
+    remoteInterceptEnabled: document.getElementById('remoteInterceptEnabled').checked,
+    autoSkipAdEnabled: document.getElementById('autoSkipAdEnabled').checked,
+    pollIntervalMs: parseInt(document.getElementById('pollIntervalMs').value || '800', 10),
+    cooldownMs: parseInt(document.getElementById('cooldownMs').value || '4500', 10),
+    confirmFrames: parseInt(document.getElementById('confirmFrames').value || '2', 10),
+    adKeywords: document.getElementById('adKeywords').value.trim(),
+    finishKeywords: document.getElementById('finishKeywords').value.trim(),
+    portraitRoi: rois.portrait,
+    landscapeRoi: rois.landscape
+  };
+  await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+  render();
+}
+
+async function discoverEsp() {
+  const r = await fetch('/api/discover', { method:'POST' });
+  const d = await r.json();
+  if (d.ok && d.ip) {
+    document.getElementById('esp32Ip').value = d.ip;
+  }
+  pollStatus();
+}
+
+async function sendAction(cmd) {
+  await fetch('/api/action', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ cmd }) });
+  pollStatus();
+}
+
+pollStatus();
+refreshFrame();
+setInterval(() => {
+  pollStatus();
+  if (document.getElementById('autoRefresh').checked) refreshFrame();
+}, 1500);
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">iPhone 投屏遥控助手</string>
+    <string name="accessibility_service_label">iPhone 遥控器按键接管</string>
+    <string name="accessibility_service_description">拦截当贝遥控器上下左右/确认键，在投屏画面前台时转发给 ESP32-S3 蓝牙翻页器控制 iPhone 视频翻页。</string>
+</resources>

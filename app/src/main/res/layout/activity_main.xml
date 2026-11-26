@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F141E"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="iPhone 投屏遥控 &amp; 红果短剧去广告助手"
+            android:textColor="#F8FAFC"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvWebUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_bg"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="8dp"
+            android:text="浏览器校准: http://--:8088"
+            android:textColor="#38BDF8"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- Left control column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1.05"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/card_bg"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:id="@+id/tvStatusSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="5dp"
+                    android:text="ESP32: 未连接\n无障碍接管: 未开启\n投屏截屏监控: 未启动"
+                    android:textColor="#E2E8F0"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnDiscover"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/btn_tv_selector"
+                android:focusable="true"
+                android:text="1. 自动搜索局域网 ESP32-S3"
+                android:textAllCaps="false"
+                android:textColor="#F8FAFC"
+                android:textSize="17sp" />
+
+            <Button
+                android:id="@+id/btnAccessibility"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/btn_tv_selector"
+                android:focusable="true"
+                android:text="2. 开启无障碍服务（拦截遥控器按键）"
+                android:textAllCaps="false"
+                android:textColor="#F8FAFC"
+                android:textSize="17sp" />
+
+            <Button
+                android:id="@+id/btnScreenMonitor"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/btn_tv_selector"
+                android:focusable="true"
+                android:text="3. 开启投屏截屏与自动跳广告"
+                android:textAllCaps="false"
+                android:textColor="#F8FAFC"
+                android:textSize="17sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnToggleRemote"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_tv_selector"
+                    android:focusable="true"
+                    android:text="遥控接管: 开"
+                    android:textAllCaps="false"
+                    android:textColor="#F8FAFC"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnToggleAutoSkip"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_tv_selector"
+                    android:focusable="true"
+                    android:text="自动跳广告: 开"
+                    android:textAllCaps="false"
+                    android:textColor="#F8FAFC"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnTestPrev"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_tv_selector"
+                    android:focusable="true"
+                    android:text="测试: 上一个"
+                    android:textAllCaps="false"
+                    android:textColor="#E2E8F0"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnTestNext"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_tv_selector"
+                    android:focusable="true"
+                    android:text="测试: 下一个"
+                    android:textAllCaps="false"
+                    android:textColor="#E2E8F0"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnTestTap"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_tv_selector"
+                    android:focusable="true"
+                    android:text="测试: 暂停"
+                    android:textAllCaps="false"
+                    android:textColor="#E2E8F0"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Right status & live logs column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/card_bg"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:text="遥控说明 &amp; 实时日志"
+                android:textColor="#38BDF8"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:text="投屏前台时：下键=下一集，上键=上一集，OK=暂停/播放，右键=点赞，菜单键=随时开关遥控接管。\n手机或电脑打开右上角网址，可直接在红果短剧真实画面上拖拽框选竖屏/横屏广告区。"
+                android:textColor="#94A3B8"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvOcrPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#0B1120"
+                android:padding="10dp"
+                android:text="状态: IDLE | 已跳广告: 0\n竖屏OCR: --\n横屏OCR: --"
+                android:textColor="#86EFAC"
+                android:textSize="13sp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:background="#0B1120"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/tvLogs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:lineSpacingExtra="4dp"
+                    android:text="等待启动..."
+                    android:textColor="#CBD5E1"
+                    android:textSize="13sp" />
+            </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
