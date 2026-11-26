@@ -54,7 +54,7 @@ class RemoteKeyAccessibilityService : AccessibilityService() {
         RuntimeState.currentForegroundPkg = pkg
         RuntimeState.currentForegroundClass = cls
 
-        val inMirror = isMirroringWindow(pkg, cls)
+        val inMirror = isMirroringPackage(pkg)
         RuntimeState.isInMirroringApp = inMirror
 
         if (inMirror != prevMirror) {
@@ -66,22 +66,31 @@ class RemoteKeyAccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun isMirroringWindow(pkg: String, cls: String): Boolean {
+    private fun isMirroringPackage(pkg: String?): Boolean {
+        if (pkg.isNullOrBlank()) return false
         val lowerPkg = pkg.lowercase()
-        val lowerCls = cls.lowercase()
-
-        // For Dangbei Screencast: only intercept during active mirroring playback
-        // (e.g. MirrorVideoActivity), so its home/settings menu remains controllable by TV remote.
-        if (lowerPkg == "com.dangbei.screencast") {
-            return lowerCls.contains("mirror") ||
-                lowerCls.contains("player") ||
-                lowerCls.contains("video") ||
-                lowerCls.contains("airplay") ||
-                lowerCls.contains("cast")
-        }
-
-        // Other common AirPlay / casting apps
         return mirroringPackages.any { lowerPkg.startsWith(it) }
+    }
+
+    private fun refreshMirroringStateFromActiveWindow(): Boolean {
+        val activePkg = try {
+            rootInActiveWindow?.packageName?.toString()
+        } catch (_: Exception) {
+            null
+        }
+        if (!activePkg.isNullOrBlank() && activePkg != "android" && activePkg != "com.android.systemui") {
+            val inMirror = isMirroringPackage(activePkg)
+            if (inMirror != RuntimeState.isInMirroringApp) {
+                RuntimeState.isInMirroringApp = inMirror
+                RuntimeState.currentForegroundPkg = activePkg
+                RuntimeState.log(
+                    if (inMirror) "检测到投屏前台 ($activePkg)，自动开启遥控接管"
+                    else "已离开投屏 ($activePkg)，遥控器恢复控制盒子"
+                )
+            }
+            return inMirror
+        }
+        return RuntimeState.isInMirroringApp
     }
 
     override fun onInterrupt() {
@@ -106,8 +115,8 @@ class RemoteKeyAccessibilityService : AccessibilityService() {
         }
 
         // Auto-detect: only intercept remote keys while an AirPlay/mirroring screen is in foreground!
-        // Outside mirroring (e.g. Dangbei TV launcher, settings, other TV apps), pass all keys through.
-        if (!RuntimeState.isInMirroringApp) {
+        // Also query rootInActiveWindow live so it works immediately even if mirroring was already open.
+        if (!refreshMirroringStateFromActiveWindow()) {
             return false
         }
 
