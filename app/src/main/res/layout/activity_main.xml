@@ -202,7 +202,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
-                android:text="投屏前台时：下键=下一集，上键=上一集，OK=暂停/播放，右键=点赞，菜单键=随时开关遥控接管。\n手机或电脑打开右上角网址，可直接在红果短剧真实画面上拖拽框选竖屏/横屏广告区。"
+                android:text="智能自动接管：在盒子桌面/设置时正常控制电视；进入投屏播放画面后自动接管遥控器（下=下一集，上=上一集，OK=暂停，右=点赞，菜单键=临时开关）。"
                 android:textColor="#94A3B8"
                 android:textSize="13sp" />
 

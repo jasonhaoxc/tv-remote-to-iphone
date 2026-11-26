@@ -10,6 +10,9 @@ object RuntimeState {
     @Volatile var accessibilityRunning: Boolean = false
     @Volatile var screenMonitorRunning: Boolean = false
     @Volatile var isSelfInForeground: Boolean = false
+    @Volatile var currentForegroundPkg: String = ""
+    @Volatile var currentForegroundClass: String = ""
+    @Volatile var isInMirroringApp: Boolean = false
 
     @Volatile var esp32Reachable: Boolean = false
     @Volatile var esp32BleConnected: Boolean = false
