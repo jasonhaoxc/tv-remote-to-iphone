@@ -11,8 +11,10 @@
 | 指令 | 作用 | 返回示例 |
 | :--- | :--- | :--- |
 | `DISCOVER` / `STATUS` | 发现设备并查询蓝牙连接状态 | `{"ok":true,"device":"Xiaozhi-HID","ip":"...","port":4210,"connected":true,"mode":"video"}` |
-| `SWIPE_UP` | 模拟手指上滑（下一个视频） | `{"ok":true,"action":"swipe_up",...}` |
-| `SWIPE_DOWN` | 模拟手指下滑（上一个视频） | `{"ok":true,"action":"swipe_down",...}` |
-| `TAP` | 屏幕单击（暂停/播放） | `{"ok":true,"action":"tap",...}` |
-| `DOUBLE_TAP` | 屏幕双击（点赞） | `{"ok":true,"action":"double_tap",...}` |
+| `SWIPE_UP` | 模拟手指上滑（下一集） | `{"ok":true,"action":"swipe_up",...}` |
+| `SWIPE_DOWN` | 模拟手指下滑（上一集） | `{"ok":true,"action":"swipe_down",...}` |
+| `SWIPE_LEFT` | 模拟手指左滑（快退） | `{"ok":true,"action":"swipe_left",...}` |
+| `SWIPE_RIGHT` | 模拟手指右滑（快进） | `{"ok":true,"action":"swipe_right",...}` |
+| `TAP` | 屏幕单击 | `{"ok":true,"action":"tap",...}` |
+| `DOUBLE_TAP` | 屏幕双击（横屏暂停/继续播放） | `{"ok":true,"action":"double_tap",...}` |
 | `MOVE:<dx>:<dy>` | 微调 iOS 鼠标光标位置 | `{"ok":true,"action":"move",...}` |
