@@ -133,12 +133,45 @@ class MainActivity : AppCompatActivity() {
             refreshUi()
         }
 
+        // Auto-restore AccessibilityService if Dangbei OS cleared it on reboot
+        // (works automatically once WRITE_SECURE_SETTINGS is granted via ADB)
+        ensureAccessibilityEnabled()
+
         // Auto-start screen monitor on launch (silent & zero-popup once PROJECT_MEDIA is allowed via appops)
         if (!RuntimeState.screenMonitorRunning) {
             val mgr = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             screenCaptureLauncher.launch(mgr.createScreenCaptureIntent())
         }
         refreshUi()
+    }
+
+    private fun ensureAccessibilityEnabled() {
+        val serviceId = "$packageName/${RemoteKeyAccessibilityService::class.java.name}"
+        try {
+            val current = Settings.Secure.getString(
+                contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            ) ?: ""
+            val services = current.split(':').filter { it.isNotBlank() }.toMutableList()
+            if (!services.contains(serviceId)) {
+                services.add(serviceId)
+                Settings.Secure.putString(
+                    contentResolver,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+                    services.joinToString(":")
+                )
+                Settings.Secure.putInt(
+                    contentResolver,
+                    Settings.Secure.ACCESSIBILITY_ENABLED,
+                    1
+                )
+                RuntimeState.log("已自动恢复无障碍遥控服务")
+            }
+        } catch (_: SecurityException) {
+            // WRITE_SECURE_SETTINGS not granted; user can still enable manually via button 2
+        } catch (e: Exception) {
+            RuntimeState.log("自动恢复无障碍失败: ${e.message}")
+        }
     }
 
     override fun onResume() {
