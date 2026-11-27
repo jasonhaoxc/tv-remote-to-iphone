@@ -47,6 +47,8 @@ public:
     // Mouse / iOS AssistiveTouch actions (Report ID 2)
     bool SwipeUp(int count = 1);
     bool SwipeDown(int count = 1);
+    bool SwipeLeft(int count = 1);
+    bool SwipeRight(int count = 1);
     bool Tap();
     bool DoubleTap();
     bool MoveCursor(int8_t dx, int8_t dy, int steps = 1);
@@ -61,6 +63,8 @@ private:
         kKeyPress,
         kSwipeUp,
         kSwipeDown,
+        kSwipeLeft,
+        kSwipeRight,
         kTap,
         kDoubleTap,
         kMoveCursor,
@@ -82,7 +86,7 @@ private:
     void SendKeyboardReport(uint8_t modifier, uint8_t keycode);
     void SendMouseReport(uint8_t buttons, int8_t dx, int8_t dy, int8_t wheel = 0);
     void ExecuteKeyTap(uint8_t keycode, uint8_t modifier);
-    void ExecuteSwipe(int8_t step_dy);
+    void ExecuteSwipe(int8_t step_dx, int8_t step_dy, int steps = 12);
     void ExecuteTap();
     void ExecuteDoubleTap();
     void ExecuteClearBonds();

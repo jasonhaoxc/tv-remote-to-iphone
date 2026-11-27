@@ -202,7 +202,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
-                android:text="智能自动接管：在盒子桌面/设置时正常控制电视；进入投屏播放画面后自动接管遥控器（下=下一集，上=上一集，OK=暂停，右=点赞，菜单键=临时开关）。"
+                android:text="智能自动接管：在盒子桌面/设置时正常控制电视；进入投屏播放画面后自动接管遥控器（下=下一集，上=上一集，OK=暂停/播放，左=快退，右=快进，菜单键=临时开关）。"
                 android:textColor="#94A3B8"
                 android:textSize="13sp" />
 

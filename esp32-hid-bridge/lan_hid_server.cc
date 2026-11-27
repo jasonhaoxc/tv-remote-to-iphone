@@ -227,6 +227,12 @@ void LanHidServer::HandlePacket(int sock, const char* data, int len, const void*
     } else if (upper_cmd == "SWIPE_DOWN") {
         bool ok = hid.SwipeDown(ParseCount(arg1));
         BuildStatusJson(reply, sizeof(reply), "swipe_down", ok, true);
+    } else if (upper_cmd == "SWIPE_LEFT") {
+        bool ok = hid.SwipeLeft(ParseCount(arg1));
+        BuildStatusJson(reply, sizeof(reply), "swipe_left", ok, true);
+    } else if (upper_cmd == "SWIPE_RIGHT") {
+        bool ok = hid.SwipeRight(ParseCount(arg1));
+        BuildStatusJson(reply, sizeof(reply), "swipe_right", ok, true);
     } else if (upper_cmd == "TAP") {
         bool ok = hid.Tap();
         BuildStatusJson(reply, sizeof(reply), "tap", ok, true);

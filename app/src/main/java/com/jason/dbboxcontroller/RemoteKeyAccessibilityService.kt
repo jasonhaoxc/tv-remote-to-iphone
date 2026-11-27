@@ -156,12 +156,18 @@ class RemoteKeyAccessibilityService : AccessibilityService() {
             KeyEvent.KEYCODE_DPAD_CENTER,
             KeyEvent.KEYCODE_ENTER,
             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
-                actionCmd = "TAP"
+                actionCmd = "DOUBLE_TAP"
                 actionLabel = "遥控→暂停/播放"
             }
-            KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                actionCmd = "DOUBLE_TAP"
-                actionLabel = "遥控→双击点赞"
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                actionCmd = "SWIPE_LEFT"
+                actionLabel = "遥控→快退"
+            }
+            KeyEvent.KEYCODE_DPAD_RIGHT,
+            KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
+                actionCmd = "SWIPE_RIGHT"
+                actionLabel = "遥控→快进"
             }
             else -> return false
         }

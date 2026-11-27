@@ -311,6 +311,16 @@ bool BleHidController::SwipeDown(int count) {
     return EnqueueCommand({CommandType::kSwipeDown, 0, 0, static_cast<uint8_t>(count), "上一个视频"});
 }
 
+bool BleHidController::SwipeLeft(int count) {
+    count = std::clamp(count, 1, 10);
+    return EnqueueCommand({CommandType::kSwipeLeft, 0, 0, static_cast<uint8_t>(count), "快退"});
+}
+
+bool BleHidController::SwipeRight(int count) {
+    count = std::clamp(count, 1, 10);
+    return EnqueueCommand({CommandType::kSwipeRight, 0, 0, static_cast<uint8_t>(count), "快进"});
+}
+
 bool BleHidController::Tap() {
     return EnqueueCommand({CommandType::kTap, 0, 0, 1, "单击"});
 }
@@ -378,10 +388,16 @@ void BleHidController::ProcessCommand(const HidCommand& cmd) {
                 ExecuteKeyTap(cmd.keycode, cmd.modifier);
                 break;
             case CommandType::kSwipeUp:
-                ExecuteSwipe(-20);
+                ExecuteSwipe(0, -20, 12);
                 break;
             case CommandType::kSwipeDown:
-                ExecuteSwipe(20);
+                ExecuteSwipe(0, 20, 12);
+                break;
+            case CommandType::kSwipeLeft:
+                ExecuteSwipe(-16, 0, 10);
+                break;
+            case CommandType::kSwipeRight:
+                ExecuteSwipe(16, 0, 10);
                 break;
             case CommandType::kTap:
                 ExecuteTap();
@@ -441,7 +457,7 @@ void BleHidController::ExecuteKeyTap(uint8_t keycode, uint8_t modifier) {
     SendKeyboardReport(0, 0);
 }
 
-void BleHidController::ExecuteSwipe(int8_t step_dy) {
+void BleHidController::ExecuteSwipe(int8_t step_dx, int8_t step_dy, int steps) {
     // 1. Wake up auto-hidden iOS AssistiveTouch cursor in-place before pressing.
     SendMouseReport(0x00, 1, 0, 0);
     vTaskDelay(pdMS_TO_TICKS(16));
@@ -452,11 +468,9 @@ void BleHidController::ExecuteSwipe(int8_t step_dy) {
     SendMouseReport(0x01, 0, 0, 0);
     vTaskDelay(pdMS_TO_TICKS(40));
 
-    // 3. Drag smoothly vertically using yesterday's proven distance (12 x ±20) so it never
-    //    hits the top/bottom edge in landscape.
-    constexpr int kDragSteps = 12;
-    for (int i = 0; i < kDragSteps; ++i) {
-        SendMouseReport(0x01, 0, step_dy, 0);
+    // 3. Drag smoothly along (step_dx, step_dy).
+    for (int i = 0; i < steps; ++i) {
+        SendMouseReport(0x01, step_dx, step_dy, 0);
         vTaskDelay(pdMS_TO_TICKS(14));
     }
 
@@ -466,8 +480,8 @@ void BleHidController::ExecuteSwipe(int8_t step_dy) {
 
     // 5. Return pointer at the exact same speed/step count so iOS acceleration is symmetric
     //    and the cursor lands right back at its original center point.
-    for (int i = 0; i < kDragSteps; ++i) {
-        SendMouseReport(0x00, 0, static_cast<int8_t>(-step_dy), 0);
+    for (int i = 0; i < steps; ++i) {
+        SendMouseReport(0x00, static_cast<int8_t>(-step_dx), static_cast<int8_t>(-step_dy), 0);
         vTaskDelay(pdMS_TO_TICKS(14));
     }
 }
